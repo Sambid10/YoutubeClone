@@ -12,12 +12,12 @@ export default function MobileSidebar({className}:{
     setsidebarOpen((prev) => !prev);
   };
   return (
-    <div className={cn("lg:hidden block -ml-4",className)}>
+    <div className={cn("lg:hidden block -ml-2",className)}>
       <div
         onClick={() => {
           setsidebarOpen(true);
         }}
-        className="hover hover:bg-gray-200 rounded-full px-2  py-2 ease-in duration-100 transition-colors cursor-pointer"
+        className="hover border border-gray-200 hover:bg-gray-200 rounded-full px-2  py-2 ease-in duration-100 transition-colors cursor-pointer"
       >
         <Menu size={22} className="text-gray-800" />
       </div>

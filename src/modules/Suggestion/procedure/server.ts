@@ -1,5 +1,4 @@
 import { baseProcedure, createTRPCRouter } from "@/trpc/init";
-import { protectedProcedure } from "@/trpc/init";
 import * as z from "zod";
 import { db } from "@/db";
 import { and, or, eq, lt, desc, getTableColumns, not } from "drizzle-orm";

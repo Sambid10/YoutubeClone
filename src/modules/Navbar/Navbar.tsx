@@ -11,7 +11,7 @@ export default function Navbar({disableiconSidebar=false,className}:{
   className?:string
 }) {
   return (
-    <nav className="h-14  sticky top-0 bg-white/95 backdrop-blur-3xl w-full z-20 ">
+    <nav className="h-14 sticky top-0 bg-white/95 backdrop-blur-3xl w-full z-20 ">
       <div className="max-w-[100rem]  mx-auto h-full flex items-center">
         <div className="flex justify-between items-center px-6 w-full h-full  relative">
           <div className="flex items-center gap-2 lg:gap-4  h-full ">

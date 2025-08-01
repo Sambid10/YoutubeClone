@@ -16,8 +16,6 @@ export default function CommentReply({
   videoId: string;
 }) {
   const trpc = useTRPC();
-  // Store expanded state per comment ID
-
   const { data, isLoading, fetchNextPage, isFetchingNextPage, hasNextPage } =
     useInfiniteQuery(
       trpc.Comments.getMany.infiniteQueryOptions(
@@ -31,11 +29,6 @@ export default function CommentReply({
         }
       )
     );
-    const querykey=trpc.Comments.getMany.queryKey()
-    const videoownerId=data?.pages[0].videoOwner.map((data)=>data.user.id)
-    const videoownerImage=data?.pages[0].videoOwner.map((data)=>data.user.imageUrl)
-
-    console.log("From reply",querykey)
   return (
     <>
       <div className="">

@@ -4,7 +4,7 @@ import { CommentsSection } from "../section/CommentsSection";
 import SuggestionSection from "../section/SuggestionSection";
 export default function HomeVideoView({ videoId }: { videoId: string }) {
   return (
-    <div className="py-2 px-6 mb-10 w-full relative">
+    <div className="py-2 px-4 mb-10 w-full relative">
       <div className="grid grid-cols-12 gap-4">
         {/* VIDEO SECTION */}
         <div className="lg:col-span-8 xl:col-span-9 xl:w-[96%] col-span-12 w-full order-1 lg:order-none h-fit ">
