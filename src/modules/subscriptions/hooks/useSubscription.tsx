@@ -32,6 +32,9 @@ export default function useSubscription({
           queryclient.invalidateQueries(
             trpc.User.getMany.infiniteQueryOptions({limit:5})
           )
+          queryclient.invalidateQueries(
+            trpc.User.getOne.queryOptions({userId:userId})
+          )
         }
       },
       onError:(err)=>{

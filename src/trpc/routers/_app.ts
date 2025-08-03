@@ -1,5 +1,5 @@
 import { categoriesRouter } from '@/modules/Categories/server/procedure';
-import {createTRPCRouter, protectedProcedure,  } from '../init';
+import {createTRPCRouter  } from '../init';
 import { studioRouter } from '@/modules/Studio/server/server';
 import { videosRouter } from '@/modules/videos/procedure';
 import { videoviewsRouter } from '@/modules/videoviews/procedure/server';

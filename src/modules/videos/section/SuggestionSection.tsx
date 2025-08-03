@@ -12,7 +12,6 @@ export default function SuggestionSection({videoId}:{
   return (
     <Suspense fallback={<SuggestionSkeletonList/>}>
         <ErrorBoundary fallback={<p>error</p>}>
-       
             <SuggestionSectionSuspense videoId={videoId}/>
         </ErrorBoundary>
     </Suspense>
@@ -32,6 +31,11 @@ function SuggestionSectionSuspense({videoId}:{
         })
     )
     const flatmappeddata=data.pages.flatMap((page)=>page.items)
+    if(flatmappeddata.length < 0){
+        return (
+            <h1>No suggestions videos found!!</h1>
+        )
+    }
     return (
         <div className='grid sm:grid-cols-2  mb-6 relative grid-cols-1 md:grid-cols-3 lg:grid-cols-1'>
 

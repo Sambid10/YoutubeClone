@@ -16,8 +16,6 @@ import { Metadata } from "next";
 export default async function page({ params }: Props) {
   const { videoId } = await params;
   const singlevideoId = videoId[0];
-  console.log("Single", singlevideoId);
-  console.log(videoId);
   const queryClient = getQueryClient();
   void queryClient.prefetchQuery(
     trpc.video.getOne.queryOptions({

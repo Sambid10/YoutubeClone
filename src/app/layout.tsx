@@ -26,7 +26,7 @@ const roboto = Roboto({
 export const metadata: Metadata = {
   title: "KathmaTube",
   description: "Watch your videos and enjoy...",
-    icons: {
+  icons: {
     icon: "/yt.png", // points to /public/favicon.png
   },
 };
@@ -40,7 +40,6 @@ export default function RootLayout({
     <TRPCReactProvider>
       <ClerkProvider>
         <html lang="en">
-         
           <body
             suppressHydrationWarning
             className={`${geistSans.variable} ${roboto.variable} ${geistMono.variable} antialiased`}
@@ -61,18 +60,19 @@ export default function RootLayout({
               }}
             />
             <NextTopLoader
+              showSpinner={false}
               color="#FF0000"
               initialPosition={0.08}
               crawlSpeed={200}
               height={3}
               crawl={true}
-           
               easing="ease"
               speed={200}
               shadow="0 0 10px #2299DD,0 0 5px #2299DD"
               zIndex={1600}
               showAtBottom={false}
             />
+
             {children}
           </body>
         </html>

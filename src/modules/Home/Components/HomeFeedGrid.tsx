@@ -12,10 +12,11 @@ export default function HomeFeedGrid({
   data: videoGetmanyOuput["items"][number];
 }) {
   return (
-    <div className="">
+    <div className="relative">
       <Link
+        prefetch
         href={`/video/${data.id}`}
-        className={cn("flex flex-col  gap-2.5  w-full")}
+        className={cn("flex flex-col w-full relative z-40 pb-2.5")}
       >
         <VideoThumbnail
           Classname="w-full h-full aspect-[16/9] "
@@ -23,23 +24,33 @@ export default function HomeFeedGrid({
           videopreviewUrl={data.previewvideoUrl}
           duration={data.vidduration ?? 0}
         />
-
-        <div className="flex flex-col w-full text-black">
-          <div className="flex items-start gap-2">
-            <div className="lg:h-10 lg:w-10 h-9 w-9 rounded-full">
+      </Link>
+      <div className="flex flex-col w-full text-black">
+        <div className="flex items-start gap-2.5 ">
+          <Link
+            href={`/user/${data.user.id}`}
+            className="cursor-pointer relative  lg:h-11 lg:w-11 h-9 w-9 rounded-full"
+          >
+            <div className=" relative  cursor-pointer">
               <UserAvatar
                 className="border-none"
                 imageUrl={data.user.imageUrl}
               />
             </div>
-            <div className="flex flex-col w-full mt-0.5">
+          </Link>
+
+          <div className="flex flex-col w-full  ">
+            <Link href={`/video/${data.id}`}>
               <h1
                 style={{ lineHeight: "110%" }}
                 className="font-semibold line-clamp-2  text-[17px] lg:text-[16px] text-[	#36454F]    w-full"
               >
                 {data.title}
               </h1>
-              <h1 style={{ lineHeight: "110%" }} className="line-clamp-2 mt-1.5  text-[12px] lg:text-[12.5px] ">
+              <h1
+                style={{ lineHeight: "110%" }}
+                className="line-clamp-2 mt-1.5  text-[12px] lg:text-[12.5px] "
+              >
                 {data.user.name}
               </h1>
               <div className="flex flex-row gap-1 tracking-normal font-[400] items-center mt-[1px]">
@@ -56,10 +67,10 @@ export default function HomeFeedGrid({
                   })}
                 </h1>
               </div>
-            </div>
+            </Link>
           </div>
         </div>
-      </Link>
+      </div>
     </div>
   );
 }

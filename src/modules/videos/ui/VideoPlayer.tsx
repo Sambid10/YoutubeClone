@@ -25,9 +25,10 @@ export default function VideoPlayer({
       <MuxPlayer
         playbackId={playbackId}
         poster={thumbnailUrl ?? "/thumb.png"}
-        autoPlay={false} 
+        autoPlay={autoplay} 
         preload="metadata"
         loop
+        defaultHiddenCaptions
         accentColor="#FF0000"
         className="rounded-md"
         style={{ objectFit: "contain", width: "100%", height: "100%" }}

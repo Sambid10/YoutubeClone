@@ -1,5 +1,5 @@
 "use client"
-import { User, User2, User2Icon, CircleUserRound, Clapperboard, Film } from "lucide-react";
+import {CircleUserRound, Film } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";

@@ -11,9 +11,8 @@ import Link from "next/link";
 import { useAuth } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 import AllTooltip from "@/modules/Tooltip/AllTooltip";
-import { UserSubscription } from "@/db/schema";
 import useSubscription from "@/modules/subscriptions/hooks/useSubscription";
-import { Bell, BellDotIcon, BellIcon } from "lucide-react";
+import { BellIcon } from "lucide-react";
 export default function VideoOwner({
   user,
   videoId,

@@ -15,7 +15,6 @@ import {
 } from "@/trpc/init";
 import { sql } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
-import { useSubscription } from "@trpc/tanstack-react-query";
 import {
   and,
   eq,
@@ -29,7 +28,7 @@ import {
 import { UTApi } from "uploadthing/server";
 import * as z from "zod";
 export const videosRouter = createTRPCRouter({
-    getManySubscribed: protectedProcedure
+  getManySubscribed: protectedProcedure
     .input(
       z.object({
         cursor: z
@@ -42,15 +41,18 @@ export const videosRouter = createTRPCRouter({
       })
     )
     .query(async ({ ctx, input }) => {
-      const {id:userId}=ctx.user
+      const { id: userId } = ctx.user;
       const { limit, cursor } = input;
-      const viewerSubscription=db.$with("viewer_subscription").as(
-        db.select({
-          userId:UserSubscription.creatorId
-        }).from(UserSubscription).where(eq(UserSubscription.viewerId,userId))
-      )
+      const viewerSubscription = db.$with("viewer_subscription").as(
+        db
+          .select({
+            userId: UserSubscription.creatorId,
+          })
+          .from(UserSubscription)
+          .where(eq(UserSubscription.viewerId, userId))
+      );
       const data = await db
-      .with(viewerSubscription)
+        .with(viewerSubscription)
         .select({
           ...getTableColumns(videos),
           user: users,
@@ -59,7 +61,7 @@ export const videosRouter = createTRPCRouter({
         .from(videos)
         .where(
           and(
-            eq(videos.visibility,"public"),
+            eq(videos.visibility, "public"),
             cursor
               ? or(
                   lt(videos.updatedAt, cursor.updatedAt),
@@ -73,8 +75,7 @@ export const videosRouter = createTRPCRouter({
         )
         .orderBy(desc(videos.updatedAt), desc(videos.id))
         .innerJoin(users, eq(users.id, videos.userId))
-        .innerJoin(viewerSubscription,eq(viewerSubscription.userId,users.id
-        ))
+        .innerJoin(viewerSubscription, eq(viewerSubscription.userId, users.id))
         .limit(limit + 1);
       const hasmore = data.length > limit;
       const items = hasmore ? data.slice(0, -1) : data;
@@ -90,34 +91,36 @@ export const videosRouter = createTRPCRouter({
         items,
       };
     }),
-  getTrending:baseProcedure
+  getTrending: baseProcedure
     .input(
       z.object({
         cursor: z
           .object({
             id: z.string().uuid(),
-            viewCount:z.number()
+            viewCount: z.number(),
           })
           .nullish(),
-      
+
         limit: z.number().min(1).max(100),
       })
     )
-    .query(async ({ ctx, input }) => {
+    .query(async ({ input }) => {
       const { limit, cursor } = input;
-      const viewcountSubquery=db.$count(videoviews,eq(videoviews.videoId,videos.id))
+      const viewcountSubquery = db.$count(
+        videoviews,
+        eq(videoviews.videoId, videos.id)
+      );
 
       const data = await db
-      
         .select({
           ...getTableColumns(videos),
           user: users,
-          viewcount: viewcountSubquery
+          viewcount: viewcountSubquery,
         })
         .from(videos)
         .where(
           and(
-            eq(videos.visibility,"public"),
+            eq(videos.visibility, "public"),
             cursor
               ? or(
                   lt(viewcountSubquery, cursor.viewCount),
@@ -138,7 +141,7 @@ export const videosRouter = createTRPCRouter({
       const nextCursor = hasmore
         ? {
             id: lastitems.id,
-           viewCount: lastitems.viewcount,
+            viewCount: lastitems.viewcount,
           }
         : null;
       return {
@@ -155,11 +158,11 @@ export const videosRouter = createTRPCRouter({
             updatedAt: z.date(),
           })
           .nullish(),
-      
+
         limit: z.number().min(1).max(100),
       })
     )
-    .query(async ({ ctx, input }) => {
+    .query(async ({ input }) => {
       const { limit, cursor } = input;
       const data = await db
         .select({
@@ -170,7 +173,7 @@ export const videosRouter = createTRPCRouter({
         .from(videos)
         .where(
           and(
-            eq(videos.visibility,"public"),
+            eq(videos.visibility, "public"),
             cursor
               ? or(
                   lt(videos.updatedAt, cursor.updatedAt),

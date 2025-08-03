@@ -145,7 +145,7 @@ export const videoInsertSchema = createInsertSchema(videos);
 export const videoUpdateSchema = createUpdateSchema(videos);
 export const videoSelectSchema = createSelectSchema(videos);
 
-export const videoViewRealtions = relations(videoviews, ({ one,many }) => ({
+export const videoViewRealtions = relations(videoviews, ({ one }) => ({
   user: one(users, {
     fields: [videoviews.userId],
     references: [users.id],
@@ -225,7 +225,7 @@ export const UserSubscription = pgTable(
 
 export const UserSubscriptionrelation = relations(
   UserSubscription,
-  ({ many, one }) => ({
+  ({  one }) => ({
     creatorId: one(users, {
       fields: [UserSubscription.creatorId],
       references: [users.id],
@@ -300,7 +300,7 @@ export const CommentReaction=pgTable("comment_reaction",{
   index("idx_commentreaction_user_id").on(t.userId),
 ])
 
-export const CommentReactionRealtion=relations(CommentReaction,({many,one})=>({
+export const CommentReactionRealtion=relations(CommentReaction,({one})=>({
   user:one(users,{
     fields:[CommentReaction.userId],
     references:[users.id]

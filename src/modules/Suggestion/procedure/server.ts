@@ -58,7 +58,6 @@ export const SuggestionRouter = createTRPCRouter({
         )
         .orderBy(desc(videos.updatedAt), desc(videos.id))
         .innerJoin(users,eq(users.id,videos.userId))
-        
         .limit(limit + 1);
       const hasmore = data.length > limit;
       const items = hasmore ? data.slice(0, -1) : data;

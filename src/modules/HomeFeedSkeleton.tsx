@@ -17,7 +17,7 @@ export default function HomeFeedSkeleton() {
       )}
     >
       <div className="grid  sm:grid-cols-2 grid-cols-1 xl:grid-cols-3 gap-5 w-full">
-        {Array(9)
+        {Array(6)
           .fill(0)
           .map((_, i) => (
             <div key={i} className="h-full w-full flex flex-col gap-2">

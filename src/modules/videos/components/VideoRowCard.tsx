@@ -5,8 +5,6 @@ import { videoGetmanyOuput } from "../types/types";
 import Link from "next/link";
 import VideoThumbnail from "../ui/VideoThumbnail";
 import { formatDistanceToNowStrict } from "date-fns";
-import InfiniteScroll from "@/components/InfinteSrcoll/InfinteSroll";
-
 const videoRowCardVariants = cva("group flex min-w-0", {
   variants: {
     size: {

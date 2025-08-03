@@ -136,6 +136,10 @@ pointer-events: auto !important;
  body {
   overflow-y: scroll;
 }
+
+#nprogress .spinner {
+  display: none !important;
+}
 .category {
   overflow: auto; /* enables scrolling */
   scrollbar-width: none; /* for Firefox */

@@ -27,7 +27,7 @@ interface UserAvatarProps extends VariantProps<typeof avatarVariants>{
     onClick?:()=>void
 }
 
-export default function UserAvatar({imageUrl,name,className,onClick,size,showHeart}:UserAvatarProps) {
+export default function UserAvatar({imageUrl,className,onClick,size,showHeart}:UserAvatarProps) {
     
   return (
     <Avatar className={cn(avatarVariants({size,className}),"relative")} onClick={onClick}>

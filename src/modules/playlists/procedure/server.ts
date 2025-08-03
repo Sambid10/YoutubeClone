@@ -1,8 +1,8 @@
 import { db } from "@/db";
 import { users, videoReactions, videos, videoviews } from "@/db/schema";
 import { createTRPCRouter, protectedProcedure } from "@/trpc/init";
-import { and, eq, getTableColumns, or, lt, desc, ilike } from "drizzle-orm";
-import { view } from "drizzle-orm/sqlite-core";
+import { TRPCError } from "@trpc/server";
+import { and, eq, getTableColumns,gt, or, lt,  ilike ,desc} from "drizzle-orm";
 import * as z from "zod";
 export const playlistRouter = createTRPCRouter({
   getLikedVideo: protectedProcedure
@@ -20,6 +20,9 @@ export const playlistRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       const { limit, cursor } = input;
       const { id: userId } = ctx.user;
+      if(!ctx.user){
+        throw new TRPCError({code:"UNAUTHORIZED"})
+      }
       const viewerreaction = db
         .$with("viewer_reaction")
         .as(
@@ -43,10 +46,10 @@ export const playlistRouter = createTRPCRouter({
             eq(viewerreaction.viewerReaction, "like"),
             cursor
               ? or(
-                  lt(videos.updatedAt, cursor.updatedAt),
+                  gt(videos.updatedAt, cursor.updatedAt),
                   and(
                     eq(videos.updatedAt, cursor.updatedAt),
-                    lt(videos.id, cursor.id)
+                    gt(videos.id, cursor.id)
                   )
                 )
               : undefined
