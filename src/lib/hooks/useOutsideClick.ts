@@ -30,5 +30,5 @@ export function useOutsideClick({ ref, handler, closeref }: Props) {
       document.removeEventListener("mousedown", listener);
       document.removeEventListener("touchcancel", listener);
     };
-  }, [ref, handler]);
+  }, [ref, handler, closeref]);
 }

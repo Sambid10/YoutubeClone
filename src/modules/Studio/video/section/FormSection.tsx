@@ -37,7 +37,7 @@ import {
   DropdownMenuTrigger,
   DropdownMenuContent,
 } from "@/components/ui/dropdown-menu";
-import { videos, videoUpdateSchema } from "@/db/schema";
+import {videoUpdateSchema } from "@/db/schema";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import {

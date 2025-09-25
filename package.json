@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev:all": "concurrently \"bun run dev:webhook\" \"bun run dev\" ",
+    "start:all": "concurrently \"npm run start\" \"ngrok http --url=immune-internally-buck.ngrok-free.app 3000\"",
     "dev": "next dev --turbopack",
     "dev:webhook": "ngrok http --url=immune-internally-buck.ngrok-free.app 3000",
     "build": "next build",

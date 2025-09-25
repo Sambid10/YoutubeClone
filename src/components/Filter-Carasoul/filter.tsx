@@ -13,7 +13,6 @@ interface Props {
 }
 export default function FilterCarasoul({
   data,
-  isLoading,
   onSelect,
   value,
 }: Props) {
@@ -21,31 +20,65 @@ export default function FilterCarasoul({
   const [rightarrow, setrightarrow] = useState(false);
   const selectedRef = useRef<HTMLDivElement | null>(null);
   const containerref = useRef<HTMLDivElement>(null);
-  const checksrcoll = () => {
+
+useEffect(() => {
+  const el = containerref.current;
+  if (!el) return;
+
+  const checkscroll = () => {
     if (containerref.current) {
       const { scrollWidth, scrollLeft, clientWidth } = containerref.current;
       setleftarrow(scrollLeft > 0);
       setrightarrow(scrollLeft + clientWidth < scrollWidth - 12);
     }
   };
-  useEffect(() => {
-    const el = containerref.current;
-    if (!el) return;
-    checksrcoll();
-    if (selectedRef.current) {
-      selectedRef.current.scrollIntoView({
-        behavior: "instant", // no animation
-        inline: "center", // scroll just enough horizontally to make it visible
-        block: "nearest", // no vertical movement
-      });
-    }
-    el.addEventListener("scroll", checksrcoll);
-    window.addEventListener("resize", checksrcoll);
-    return () => {
-      el.removeEventListener("scroll", checksrcoll);
-      window.removeEventListener("resize", checksrcoll);
-    };
-  }, [checksrcoll]);
+
+  checkscroll();
+
+  if (selectedRef.current) {
+    selectedRef.current.scrollIntoView({
+      behavior: "instant",
+      inline: "center",
+      block: "nearest",
+    });
+  }
+
+  el.addEventListener("scroll", checkscroll);
+  window.addEventListener("resize", checkscroll);
+
+  return () => {
+    el.removeEventListener("scroll", checkscroll);
+    window.removeEventListener("resize", checkscroll);
+  };
+}, []); // no deps needed, setters are stable
+
+
+
+  // const checksrcoll = () => {
+  //   if (containerref.current) {
+  //     const { scrollWidth, scrollLeft, clientWidth } = containerref.current;
+  //     setleftarrow(scrollLeft > 0);
+  //     setrightarrow(scrollLeft + clientWidth < scrollWidth - 12);
+  //   }
+  // };
+  // useEffect(() => {
+  //   const el = containerref.current;
+  //   if (!el) return;
+  //   checksrcoll();
+  //   if (selectedRef.current) {
+  //     selectedRef.current.scrollIntoView({
+  //       behavior: "instant", // no animation
+  //       inline: "center", // scroll just enough horizontally to make it visible
+  //       block: "nearest", // no vertical movement
+  //     });
+  //   }
+  //   el.addEventListener("scroll", checksrcoll);
+  //   window.addEventListener("resize", checksrcoll);
+  //   return () => {
+  //     el.removeEventListener("scroll", checksrcoll);
+  //     window.removeEventListener("resize", checksrcoll);
+  //   };
+  // }, [checksrcoll]);
   const handleleftClick = () => {
     if (containerref.current) {
       containerref.current.scrollLeft -= 500;
