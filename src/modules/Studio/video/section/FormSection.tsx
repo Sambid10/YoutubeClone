@@ -30,6 +30,7 @@ import {
   ImagePlus,
   RotateCcwIcon,
   Recycle,
+  AlertCircle,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -185,6 +186,9 @@ const FormSectionSuspense = ({ videoId }: { videoId: string }) => {
               <h1 className="text-xs text-gray-500 px-6">
                 Manage your video details
               </h1>
+              <h1 className="text-xs text-red-600 px-6 flex items-center mt-2">
+                <AlertCircle className="h-4 w-4 mr-1"/>
+                Please revalidate if the any of the (video/thumbnail/thumbnail preview video) is not being uploaded.</h1>
             </div>
             <div className="pr-6 flex gap-4 items-center">
               <Button

@@ -322,6 +322,8 @@ export const videosRouter = createTRPCRouter({
       if (!asset) {
         throw new TRPCError({ code: "BAD_REQUEST" });
       }
+      const videopreviewUrl = `https://image.mux.com/${asset.playback_ids?.[0].id}/animated.gif`;
+      const thumbnailUrl = `https://image.mux.com/${asset.playback_ids?.[0].id}/thumbnail.jpg`;
       const [updatedVideo] = await db
         .update(videos)
         .set({
@@ -329,6 +331,8 @@ export const videosRouter = createTRPCRouter({
           muxPlaybackId: asset.playback_ids?.[0].id,
           muxAssetId: asset.id,
           vidduration: asset.duration ? Math.round(asset.duration * 1000) : 0,
+          previewvideoUrl:videopreviewUrl,
+          thumbnailUrl:thumbnailUrl
         })
         .where(and(eq(videos.id, videoId), eq(videos.userId, userId)))
         .returning();
