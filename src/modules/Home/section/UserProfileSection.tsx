@@ -8,9 +8,10 @@ import { useQuery } from "@tanstack/react-query";
 import UserAvatar from "@/modules/UserAvater/UserAvatar";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { BellIcon } from "lucide-react";
+import { BellIcon, Loader2 } from "lucide-react";
 import useSubscription from "@/modules/subscriptions/hooks/useSubscription";
 import { useAuth } from "@clerk/nextjs";
+import { Loader } from "lucide-react";
 export default function UserProfileSection({ userId }: { userId: string }) {
   const { openSideBar } = useSidebarStore();
   return (
@@ -45,8 +46,8 @@ const UserProfileSectionSuspense = ({ userId }: { userId: string }) => {
     userId: userId,
     isSubscribed: !!data?.viewerSubscribed,
   });
-  if (!data) {
-    return <h1>No user found..</h1>;
+  if (!data?.id) {
+    return  <Loader2 className="animate-spin text-red-500 flex w-full justify-center"/>;
   }
 
   return (

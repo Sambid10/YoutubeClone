@@ -28,7 +28,7 @@ export default function UserSearchCards({ data, className }: Props) {
       )}
     >
       <div className="flex flex-row  w-full">
-        <Link href={`/video/${data.id}`} className="w-full flex justify-center">
+        <Link href={`/user/${data.id}`} className="w-full flex justify-center">
           <div className="h-30 w-30">
             <UserAvatar imageUrl={data.imageUrl} className="border-none" />
           </div>
@@ -36,7 +36,7 @@ export default function UserSearchCards({ data, className }: Props) {
 
         <div className="w-full flex justify-between items-center  ">
           <div className="flex flex-col w-full justify-start h-full mt-2 ">
-            <Link href={`/video/${data.id}`} className="h-full w-full ">
+            <Link href={`/user/${data.id}`} className="h-full w-full ">
               <h1 className="font-semibold text-[#121212] text-[19px]">
                 {data.name}
               </h1>
