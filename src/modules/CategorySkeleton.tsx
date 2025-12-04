@@ -7,7 +7,7 @@ export default function CategorySkeleton() {
         <div key={index} className="">
           {" "}
           {/* Prevent shrinking of items */}
-          <Skeleton className=" px-2 py-2 rounded-md text-sm w-[150px] animate-pulse font-semibold">
+          <Skeleton className=" px-2 py-2 rounded-md text-sm w-[150px] font-semibold">
             &nbsp;
           </Skeleton>
         </div>
