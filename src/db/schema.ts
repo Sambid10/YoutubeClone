@@ -25,11 +25,14 @@ export const users = pgTable(
     clerkId: text("clerk_id").unique().notNull(),
     name: text("name").notNull(),
     imageUrl: text("image_url").notNull(),
+    bannerUrl: text("banner_url"),
+    bannerKey: text("banner_key"),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
   },
   (t) => [uniqueIndex("clerk_id_idx").on(t.clerkId)]
 );
+export const UserUpdateSchema = createUpdateSchema(users);
 
 export const userRelations = relations(users, ({ many }) => ({
   videos: many(videos),

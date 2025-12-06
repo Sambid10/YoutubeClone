@@ -3,14 +3,14 @@ import { users, videos } from "@/db/schema";
 import { auth } from "@clerk/nextjs/server";
 import { eq, and } from "drizzle-orm";
 import { createUploadthing, type FileRouter } from "uploadthing/next";
-import { UploadThingError ,UTApi} from "uploadthing/server";
+import { UploadThingError, UTApi } from "uploadthing/server";
 
 import * as z from "zod";
 const f = createUploadthing({
   errorFormatter: (err) => {
     console.log("Error uploading file", err.message);
     console.log("  - Above error caused by:", err.cause);
-    
+
     return { message: err.message };
   },
 });
@@ -28,7 +28,6 @@ export const ourFileRouter = {
     )
     .middleware(async ({ input }) => {
       const { userId: clerkUserId } = await auth();
-      console.log("UPLOADTHONG APO")
       if (!clerkUserId) throw new UploadThingError("Unauthorized");
 
       const [user] = await db
@@ -39,18 +38,18 @@ export const ourFileRouter = {
         throw new UploadThingError("No user found");
       }
 
-      const[existingVideo]=await db.select({
-       thumnailkey:videos.thumbnailkey
-      }).from(videos).where(and(eq(videos.id,input.videoId),eq(videos.userId,user.id)))
-      if(!existingVideo){
-         throw new UploadThingError({code:"BAD_REQUEST"});
+      const [existingVideo] = await db.select({
+        thumnailkey: videos.thumbnailkey
+      }).from(videos).where(and(eq(videos.id, input.videoId), eq(videos.userId, user.id)))
+      if (!existingVideo) {
+        throw new UploadThingError({ code: "BAD_REQUEST" });
       }
-      if(existingVideo.thumnailkey){
-        const utapi=new UTApi()
+      if (existingVideo.thumnailkey) {
+        const utapi = new UTApi()
         await utapi.deleteFiles(existingVideo.thumnailkey)
         await db.update(videos).set({
-          thumbnailkey:null,thumbnailUrl:null
-        }).where(and(eq(videos.id,input.videoId),eq(videos.userId,user.id)))
+          thumbnailkey: null, thumbnailUrl: null
+        }).where(and(eq(videos.id, input.videoId), eq(videos.userId, user.id)))
       }
       return { user, ...input };
     })
@@ -59,7 +58,7 @@ export const ourFileRouter = {
         .update(videos)
         .set({
           thumbnailUrl: file.ufsUrl,
-          thumbnailkey:file.key
+          thumbnailkey: file.key
         })
         .where(
           and(
@@ -70,6 +69,49 @@ export const ourFileRouter = {
 
       return { uploadedBy: metadata.user.clerkId };
     }),
+  profileBanner: f({
+    image: {
+      maxFileCount: 1,
+      maxFileSize: "4MB",
+    },
+  })
+    .input(z.object({ userId: z.string()}))
+    .middleware(async ({ input }) => {
+      const { userId: clerkUserId } = await auth();
+      if (!clerkUserId || clerkUserId !== input.userId) {
+        throw new UploadThingError("Unauthorized");
+      }
+      const [user] = await db
+        .select()
+        .from(users)
+        .where(eq(users.clerkId, clerkUserId));
+      if (!user) throw new UploadThingError("No user found");
+      if (user.bannerKey) {
+        const utapi = new UTApi();
+        await utapi.deleteFiles(user.bannerKey);
+        await db
+          .update(users)
+          .set({
+            bannerKey: null,
+            bannerUrl: null,
+          })
+          .where(eq(users.clerkId, clerkUserId));
+      }
+      return {
+        user,
+        input,
+      };
+    })
+    .onUploadComplete(async ({ file, metadata }) => {
+      await db
+        .update(users)
+        .set({
+          bannerKey: file.key,
+          bannerUrl: file.ufsUrl,
+        })
+        .where(eq(users.clerkId, metadata.input.userId));
+      return { uploadedBy: metadata.user.clerkId };
+    })
 } satisfies FileRouter;
 
 export type OurFileRouter = typeof ourFileRouter;

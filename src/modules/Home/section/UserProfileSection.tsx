@@ -1,5 +1,5 @@
 "use client";
-import React, { Suspense } from "react";
+import React, { Suspense, useState } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { cn } from "@/lib/utils";
 import { useSidebarStore } from "@/zustand/useIconSidebar";
@@ -12,6 +12,7 @@ import { BellIcon, Loader2 } from "lucide-react";
 import useSubscription from "@/modules/subscriptions/hooks/useSubscription";
 import { useAuth } from "@clerk/nextjs";
 import { Loader } from "lucide-react";
+import UserBannerUploadModal from "@/modules/Studio/video/Modal/UserBannerUploadModal";
 export default function UserProfileSection({ userId }: { userId: string }) {
   const { openSideBar } = useSidebarStore();
   return (
@@ -35,7 +36,8 @@ export default function UserProfileSection({ userId }: { userId: string }) {
 
 const UserProfileSectionSuspense = ({ userId }: { userId: string }) => {
   const { openSideBar } = useSidebarStore();
-  const {userId:clerkid}=useAuth()
+  const [profileBanner,setProfileBanner]=useState(false)
+  const { userId:clerkid } = useAuth()
   const trpc = useTRPC();
   const { data } = useQuery(
     trpc.User.getOne.queryOptions({
@@ -47,9 +49,14 @@ const UserProfileSectionSuspense = ({ userId }: { userId: string }) => {
     isSubscribed: !!data?.viewerSubscribed,
   });
   if (!data?.id) {
-    return  <Loader2 className="animate-spin text-red-500 flex w-full justify-center"/>;
+    return <Loader2 className="animate-spin text-red-500 flex w-full justify-center" />;
   }
-
+  const handleOpen=()=>{
+    console.log("CORRECT",userId,clerkid)
+    if(clerkid === data.clerkId){
+      setProfileBanner(true)
+    }
+  }
   return (
     <div
       className={cn("px-4 sm:px-6 md:px-18  lg:px-4", {
@@ -57,21 +64,36 @@ const UserProfileSectionSuspense = ({ userId }: { userId: string }) => {
       })}
     >
       <div className="flex flex-col gap-6">
-        <div className="h-42 rounded-xl w-full bg-gray-100"></div>
+        {profileBanner &&
+        <UserBannerUploadModal
+        onOpenChange={setProfileBanner}
+        open={profileBanner}
+        user={data}
+        userId={data.clerkId}
+        />
+        }
+        <div
+          onClick={handleOpen}
+          style={{
+            backgroundImage: data.bannerUrl ? `url(${data.bannerUrl})` : "none",
+            backgroundSize:"cover",
+            backgroundRepeat: "no-repeat",
+          }}
+          className="h-52 rounded-xl w-full bg-gray-100 shadow-xl"></div>
         <div className="flex gap-2">
           <UserAvatar imageUrl={data.imageUrl} className="h-48 w-48" />
           <div className="flex flex-col gap-2">
             <h1 className="font-bold text-4xl">{data.name}</h1>
             <span className="flex gap-1 items-center">
-                 <h1 className="text-sm text-gray-800 font-medium">
-              &middot; {data.subscriberCount} subscribers
-            </h1>
-            <h1 className="text-sm text-gray-800 font-medium">
-              &middot; {data.videos.length} videos
-            </h1>
+              <h1 className="text-sm text-gray-800 font-medium">
+                &middot; {data.subscriberCount} subscribers
+              </h1>
+              <h1 className="text-sm text-gray-800 font-medium">
+                &middot; {data.videos.length} videos
+              </h1>
             </span>
-           
-            {clerkid === data.clerkId  ? (
+
+            {clerkid === data.clerkId ? (
               <Button className="rounded-full px-5 ">
                 <Link href={`/studio/${data.id}}`}>YT Studio</Link>
               </Button>
@@ -79,10 +101,9 @@ const UserProfileSectionSuspense = ({ userId }: { userId: string }) => {
               <Button
                 onClick={onclick}
                 disabled={isPending}
-                className={`rounded-full px-5  ${
-                  data.viewerSubscribed &&
+                className={`rounded-full px-5  ${data.viewerSubscribed &&
                   "bg-gray-100 border hover:bg-gray-200/60 border-gray-200 text-black"
-                }`}
+                  }`}
               >
                 {!data.viewerSubscribed ? (
                   <h1>Subscribe</h1>
@@ -96,7 +117,6 @@ const UserProfileSectionSuspense = ({ userId }: { userId: string }) => {
             <h1></h1>
           </div>
         </div>
-
         {data?.videos.map((data) => data.id)}
       </div>
     </div>
