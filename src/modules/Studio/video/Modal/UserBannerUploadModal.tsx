@@ -4,7 +4,7 @@ import ResponsiveDialog from "@/components/ResponsiveDialog/ResponsiveDialog";
 import Image from "next/image";
 import React, { useRef, useState } from "react";
 import { UserUpdateSchema, videoUpdateSchema } from "@/db/schema";
-import { CropIcon, ImagePlus, Loader2 } from "lucide-react";
+import { CropIcon, ImagePlus, Loader2, Trash } from "lucide-react";
 import AllTooltip from "@/modules/Tooltip/AllTooltip";
 import CropThumbnailModal from "./CropThumbnailModal";
 import Resizer from "react-image-file-resizer";
@@ -85,7 +85,7 @@ function BannerInput({
             type: "image/webp"
         })
         await startUpload([file], {
-            userId:userId
+            userId: userId
         })
     }
     function onImageSelected(image: File | undefined) {
@@ -118,7 +118,7 @@ function BannerInput({
                 accept="image/*"
                 onChange={(e) => onImageSelected(e.target.files?.[0])}
             />
-            <AllTooltip content="Change thumbnail">
+            <AllTooltip content="Change Banner">
                 <button type="button" onClick={() => fileRef.current?.click()}>
                     <div className="w-full relative bg-black cursor-pointer flex items-center  justify-center group overflow-hidden border-dashed border border-gray-400 aspect-[16/9]">
                         <Image
@@ -150,6 +150,12 @@ function BannerInput({
                     Crop
                 </Button>
                 <Button
+                    className={`w-24 bg-red-500 hover:bg-red-400 ${!src && "hidden"}`}
+                >
+                    <Trash />
+                    Delete
+                </Button>
+                <Button
                     disabled={isUploading}
                     className="w-20" onClick={save}>
                     {isUploading ? <Loader2 className="animate-spin text-[#ff0000] " /> : <h1>Save</h1>}
@@ -158,7 +164,7 @@ function BannerInput({
 
             {cropDialogOpen && uploadedThumbnail && (
                 <CropThumbnailModal
-                      cropAspectRatio={3.66} 
+                    cropAspectRatio={3.66}
                     src={URL.createObjectURL(uploadedThumbnail)} // Always use original
                     onCropped={(blob) => {
                         setImageToEdit(blob!); // Display the cropped image

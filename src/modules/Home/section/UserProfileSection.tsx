@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { BellIcon, Loader2 } from "lucide-react";
 import useSubscription from "@/modules/subscriptions/hooks/useSubscription";
+import Image from "next/image";
 import { useAuth } from "@clerk/nextjs";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import UserBannerUploadModal from "@/modules/Studio/video/Modal/UserBannerUploadModal";
@@ -74,14 +75,20 @@ const UserProfileSectionSuspense = ({ userId }: { userId: string }) => {
         }
         <div
           onClick={handleOpen}
-          style={{
-            backgroundImage: data.bannerUrl ? `url(${data.bannerUrl})` : "none",
-            backgroundSize: "cover",
-            backgroundRepeat: "no-repeat",
-          }}
-          className="h-52 rounded-xl w-full bg-gray-100 shadow-xl"></div>
-        <div className="flex gap-2">
-          <UserAvatar imageUrl={data.imageUrl} className="h-48 w-48" />
+          className={`h-52 rounded-xl w-full bg-gray-100 shadow-xl relative ${clerkid === data.clerkId && "cursor-pointer"}`}>
+          {data.bannerUrl &&
+            <Image
+              src={data.bannerUrl}
+              fill
+              objectFit="cover"
+              alt="banner"
+              className="rounded-xl"
+            />
+          }
+
+        </div>
+        <div className="flex gap-2 flex-col md:flex-row">
+          <UserAvatar imageUrl={data.imageUrl} className="h-24 w-24 md:h-48 md:w-48" />
           <div className="flex flex-col gap-2">
             <h1 className="font-bold text-4xl">{data.name}</h1>
             <span className="flex gap-1 items-center">
@@ -94,29 +101,42 @@ const UserProfileSectionSuspense = ({ userId }: { userId: string }) => {
             </span>
 
             {clerkid === data.clerkId ? (
-              <Button className="rounded-full px-5 ">
-                <Link href={`/studio/${data.id}}`}>YT Studio</Link>
-              </Button>
+              <>
+                <Button className="rounded-full px-5 ">
+                  <Link href={`/studio/${data.id}}`}>YT Studio</Link>
+                </Button>
+                <Button 
+                onClick={handleOpen}
+                className={`rounded-full px-5  
+                  bg-gray-100 border hover:bg-gray-200/60 border-gray-200 text-black
+                  `}
+                >
+                  <h1>Edit Banner</h1>
+                </Button>
+              </>
+
             ) : (
-              <Button
-                onClick={onclick}
-                disabled={isPending}
-                className={`rounded-full px-5  ${data.viewerSubscribed &&
-                  "bg-gray-100 border hover:bg-gray-200/60 border-gray-200 text-black"
-                  }`}
-              >
-                {!data.viewerSubscribed ? (
-                  <h1>Subscribe</h1>
-                ) : (
-                  <h1 className="flex items-center gap-2">
-                    <BellIcon className="h-[18px] w-[18px]" /> Subscribed
-                  </h1>
-                )}
-              </Button>
+              <>
+                <Button
+                  onClick={onclick}
+                  disabled={isPending}
+                  className={`rounded-full px-5  ${data.viewerSubscribed &&
+                    "bg-gray-100 border hover:bg-gray-200/60 border-gray-200 text-black"
+                    }`}
+                >
+                  {!data.viewerSubscribed ? (
+                    <h1>Subscribe</h1>
+                  ) : (
+                    <h1 className="flex items-center gap-2">
+                      <BellIcon className="h-[18px] w-[18px]" /> Subscribed
+                    </h1>
+                  )}
+                </Button>
+              </>
             )}
             <h1></h1>
           </div>
-          
+
         </div>
         <Tabs defaultValue="account" className="w-full border-b border-gray-400 ">
           <TabsList className="w-[200px] bg-white">
@@ -124,7 +144,7 @@ const UserProfileSectionSuspense = ({ userId }: { userId: string }) => {
             <TabsTrigger value="playlist">Playlist</TabsTrigger>
           </TabsList>
           <TabsContent value="videos">Make changes to your account here.</TabsContent>
-           <TabsContent value="playlist">Make changes to your account here.</TabsContent>
+          <TabsContent value="playlist">Make changes to your account here.</TabsContent>
         </Tabs>
       </div>
     </div>
