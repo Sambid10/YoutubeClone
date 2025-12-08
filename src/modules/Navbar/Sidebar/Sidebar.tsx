@@ -1,5 +1,5 @@
 "use client";
-import { Clock, Home, List, ThumbsUp, Flame, Wallet, Film } from "lucide-react";
+import { Clock, Home, List, ThumbsUp, Flame, Wallet, Film, UserIcon } from "lucide-react";
 import React from "react";
 import SideBarContent from "./SidBarContent";
 import { LiaHomeSolid } from "react-icons/lia";
@@ -34,6 +34,12 @@ export const sidebarItems = [
 ];
 import { useSidebarStore } from "@/zustand/useIconSidebar";
 export const bottomsidebarItems = [
+   {
+    name: "Profile",
+    href:"/user",
+    key:"profile",
+    icon: UserIcon
+  },
   {
     name: "History",
     href: "/history",
@@ -57,7 +63,7 @@ export const bottomsidebarItems = [
     href:"/studio",
     key:"studio",
     icon:SiYoutubestudio
-  }
+  },
 ];
 export default function Sidebar() {
   const { openSideBar} = useSidebarStore();
