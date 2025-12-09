@@ -15,6 +15,8 @@ import { useAuth } from "@clerk/nextjs";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import UserBannerUploadModal from "@/modules/Studio/video/Modal/UserBannerUploadModal";
 import { toast } from "sonner";
+import UserVideos from "../Components/UserVideos";
+import SearchCards from "@/modules/Search/Components/SearchCard";
 export default function UserProfileSection({ userId }: { userId: string }) {
   const { openSideBar } = useSidebarStore();
   return (
@@ -46,6 +48,7 @@ const UserProfileSectionSuspense = ({ userId }: { userId: string }) => {
       userId: userId,
     })
   );
+  console.log(data?.videos)
   const { isPending, onclick } = useSubscription({
     userId: userId,
     isSubscribed: !!data?.viewerSubscribed,
@@ -139,12 +142,15 @@ const UserProfileSectionSuspense = ({ userId }: { userId: string }) => {
           </div>
 
         </div>
-        <Tabs defaultValue="account" className="w-full border-b border-gray-400 ">
-          <TabsList className="w-[200px] bg-white">
+        <Tabs defaultValue="videos" className="w-full">
+          
+          <TabsList className="bg-white border-b border-gray-400 flex gap-4 w-[400px]">
             <TabsTrigger value="videos">Videos</TabsTrigger>
             <TabsTrigger value="playlist">Playlist</TabsTrigger>
           </TabsList>
-          <TabsContent value="videos">Make changes to your account here.</TabsContent>
+          <TabsContent value="videos">
+            <UserVideos vidData={data.videos}/>
+          </TabsContent>
           <TabsContent value="playlist">Make changes to your account here.</TabsContent>
         </Tabs>
       </div>

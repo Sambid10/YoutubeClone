@@ -20,7 +20,9 @@ import { uuid } from "drizzle-orm/pg-core";
 import { use } from "react";
 import { UTApi } from "uploadthing/server";
 import * as z from "zod";
+import { InferSelectModel } from "drizzle-orm";
 
+export type Video = InferSelectModel<typeof videos>;
 export const UserRouter = createTRPCRouter({
   getMany: baseProcedure
     .input(
@@ -72,9 +74,9 @@ export const UserRouter = createTRPCRouter({
             ilike(users.name, `%${query ?? ""}%`),
             cursor
               ? or(
-                  lt(users.updatedAt, cursor.updatedAt),
-                  and(eq(users.updatedAt, cursor.updatedAt), lt(users.id, cursor.id))
-                )
+                lt(users.updatedAt, cursor.updatedAt),
+                and(eq(users.updatedAt, cursor.updatedAt), lt(users.id, cursor.id))
+              )
               : undefined
           )
         )
@@ -142,7 +144,7 @@ export const UserRouter = createTRPCRouter({
             where ${UserSubscription.creatorId} = ${users.id}
           )`.mapWith(Number),
           viewerSubscribed: isNotNull(viewerSubscriptions.viewerId).mapWith(Boolean),
-          videos: sql<any[]>`(
+          videos: sql<Video[]>`(
             select json_agg(${userVideos}.*) from ${userVideos}
           )`,
         })
@@ -154,15 +156,17 @@ export const UserRouter = createTRPCRouter({
 
       return result;
     }),
-    deleteBanner:protectedProcedure.input(z.object({
-      userId:z.string()
-    })).mutation(async({ctx,input})=>{
-      if (!input.userId) return
-      const [user]=await db.select().from(users).where(eq(users.clerkId,input.userId))
-      if (!user) throw new TRPCError({ code: "NOT_FOUND" });
-      const utapi=new UTApi()
-      if (!user.bannerKey) throw new TRPCError({code:"BAD_REQUEST"})
-      await utapi.deleteFiles(user.bannerKey)
-      await db.update(users).set({bannerKey:null,bannerUrl:null}).where(eq(users.clerkId,input.userId))
-    })
+
+
+  deleteBanner: protectedProcedure.input(z.object({
+    userId: z.string()
+  })).mutation(async ({ ctx, input }) => {
+    if (!input.userId) return
+    const [user] = await db.select().from(users).where(eq(users.clerkId, input.userId))
+    if (!user) throw new TRPCError({ code: "NOT_FOUND" });
+    const utapi = new UTApi()
+    if (!user.bannerKey) throw new TRPCError({ code: "BAD_REQUEST" })
+    await utapi.deleteFiles(user.bannerKey)
+    await db.update(users).set({ bannerKey: null, bannerUrl: null }).where(eq(users.clerkId, input.userId))
+  })
 });
