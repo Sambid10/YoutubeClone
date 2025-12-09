@@ -4,13 +4,16 @@ import ResponsiveDialog from "@/components/ResponsiveDialog/ResponsiveDialog";
 import Image from "next/image";
 import React, { useRef, useState } from "react";
 import { UserUpdateSchema, videoUpdateSchema } from "@/db/schema";
-import { CropIcon, ImagePlus, Loader2, Trash } from "lucide-react";
+import { CropIcon, ImagePlus, Loader, Loader2, Trash } from "lucide-react";
 import AllTooltip from "@/modules/Tooltip/AllTooltip";
 import CropThumbnailModal from "./CropThumbnailModal";
 import Resizer from "react-image-file-resizer";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { useTRPC } from "@/trpc/client";
+import { useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { useUploadThing } from "@/utils/uploadthing/uploadthing";
 interface Props {
     open: boolean;
@@ -35,9 +38,11 @@ export default function UserBannerUploadModal({
             <BannerInput
                 userId={userId}
                 src={
-                    croppedImage ? URL.createObjectURL(croppedImage) : user.bannerUrl!
+                    croppedImage ? URL.createObjectURL(croppedImage) : user.bannerUrl || ""
                 }
-                banner={user.bannerUrl!}
+                banner={user.bannerUrl ||
+                    ""
+                }
                 onOpenChange={onOpenChange}
                 onImageCropped={setCroppedImage}
             />
@@ -86,7 +91,7 @@ function BannerInput({
         })
         await startUpload([file], {
             userId: userId
-        })
+        }).then(()=>router.refresh())
     }
     function onImageSelected(image: File | undefined) {
         if (!image) return;
@@ -106,8 +111,33 @@ function BannerInput({
             "file"
         );
     }
-
+    const trpc = useTRPC()
     const canCrop = Boolean(imageToEdit);
+    const deleteBanner = useMutation(
+        trpc.User.deleteBanner.mutationOptions({
+            onSuccess: () => {
+                toast.custom(() => (
+                    <div className="text-white bg-gray-950 rounded-md w-[250px] px-4 py-4 text-sm text-center">
+                        <h1 className="text-left">Banner Deleted.</h1>
+                    </div>
+                ));
+                onOpenChange(false)
+                router.refresh()
+            }, onError: () => {
+                toast.custom(() => (
+                    <div className="text-white bg-red-400 rounded-md w-[250px] px-4 py-4 text-sm text-center">
+                        <h1 className="text-left">Something went wrong.</h1>
+                    </div>
+                ));
+            }
+        })
+    )
+    const previewSrc =
+        imageToEdit
+            ? URL.createObjectURL(imageToEdit)
+            : uploadedThumbnail
+                ? URL.createObjectURL(uploadedThumbnail)
+                : src || null;
 
     return (
         <>
@@ -120,21 +150,26 @@ function BannerInput({
             />
             <AllTooltip content="Change Banner">
                 <button type="button" onClick={() => fileRef.current?.click()}>
-                    <div className="w-full relative bg-black cursor-pointer flex items-center  justify-center group overflow-hidden border-dashed border border-gray-400 aspect-[16/9]">
-                        <Image
-                            fill
-                            alt="thumbnail"
-                            className="object-contain group-hover:scale-105 group-hover:opacity-80 transition-all duration-200 ease-in"
-                            src={
-                                imageToEdit
-                                    ? URL.createObjectURL(imageToEdit)
-                                    : uploadedThumbnail
-                                        ? URL.createObjectURL(uploadedThumbnail)
-                                        : src
-                            }
-                        />
-                        <div className="opacity-20 border border-gray-500 group-hover:opacity-100 transition-all duration-200 ease-in absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center rounded-full bg-gray-200/70 h-16 w-16">
-                            <ImagePlus className="size-10 text-black" />
+                    <div className="w-full relative bg-black cursor-pointer flex items-center justify-center group overflow-hidden border-dashed border border-gray-400 aspect-[16/9]">
+                        {previewSrc ? (
+                            <Image
+                                fill
+                                unoptimized
+                                alt="thumbnail"
+                                src={previewSrc}
+                                className="object-contain group-hover:scale-105 group-hover:opacity-80 transition-all"
+                            />
+                        ) : (
+                            <div className="flex flex-col items-center text-gray-400">
+                                <ImagePlus className="size-10" />
+                                <span className="text-sm mt-1">Upload banner</span>
+                            </div>
+                        )}
+
+                        <div className="opacity-20 group-hover:opacity-100 transition absolute inset-0 flex items-center justify-center">
+                            <div className="rounded-full bg-gray-200/70 h-16 w-16 flex items-center justify-center">
+                                <ImagePlus className="size-10 text-black" />
+                            </div>
                         </div>
                     </div>
                 </button>
@@ -150,13 +185,20 @@ function BannerInput({
                     Crop
                 </Button>
                 <Button
+                disabled={deleteBanner.isPending || isUploading }
+                    onClick={() => deleteBanner.mutate({ userId: userId })}
                     className={`w-24 bg-red-500 hover:bg-red-400 ${!src && "hidden"}`}
                 >
-                    <Trash />
-                    Delete
+
+                    {deleteBanner.isPending ? <Loader2 className="animate-spin" /> :
+                        <>
+                            <Trash />
+                            <h1>Delete</h1>
+                        </>
+                    }
                 </Button>
                 <Button
-                    disabled={isUploading}
+                    disabled={isUploading || deleteBanner.isPending}
                     className="w-20" onClick={save}>
                     {isUploading ? <Loader2 className="animate-spin text-[#ff0000] " /> : <h1>Save</h1>}
                 </Button>

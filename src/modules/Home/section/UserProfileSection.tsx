@@ -4,7 +4,7 @@ import { ErrorBoundary } from "react-error-boundary";
 import { cn } from "@/lib/utils";
 import { useSidebarStore } from "@/zustand/useIconSidebar";
 import { useTRPC } from "@/trpc/client";
-import { useQuery } from "@tanstack/react-query";
+import { QueryClient, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import UserAvatar from "@/modules/UserAvater/UserAvatar";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -14,6 +14,7 @@ import Image from "next/image";
 import { useAuth } from "@clerk/nextjs";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import UserBannerUploadModal from "@/modules/Studio/video/Modal/UserBannerUploadModal";
+import { toast } from "sonner";
 export default function UserProfileSection({ userId }: { userId: string }) {
   const { openSideBar } = useSidebarStore();
   return (
@@ -105,9 +106,9 @@ const UserProfileSectionSuspense = ({ userId }: { userId: string }) => {
                 <Button className="rounded-full px-5 ">
                   <Link href={`/studio/${data.id}}`}>YT Studio</Link>
                 </Button>
-                <Button 
-                onClick={handleOpen}
-                className={`rounded-full px-5  
+                <Button
+                  onClick={handleOpen}
+                  className={`rounded-full px-5  
                   bg-gray-100 border hover:bg-gray-200/60 border-gray-200 text-black
                   `}
                 >

@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { db } from "@/db";
 import { users, UserSubscription, videos } from "@/db/schema";
-import { baseProcedure, createTRPCRouter } from "@/trpc/init";
+import { baseProcedure, createTRPCRouter, protectedProcedure } from "@/trpc/init";
+import { auth } from "@clerk/nextjs/server";
 import { TRPCError } from "@trpc/server";
 import {
   eq,
@@ -15,6 +16,9 @@ import {
   sql,
   isNotNull,
 } from "drizzle-orm";
+import { uuid } from "drizzle-orm/pg-core";
+import { use } from "react";
+import { UTApi } from "uploadthing/server";
 import * as z from "zod";
 
 export const UserRouter = createTRPCRouter({
@@ -150,4 +154,15 @@ export const UserRouter = createTRPCRouter({
 
       return result;
     }),
+    deleteBanner:protectedProcedure.input(z.object({
+      userId:z.string()
+    })).mutation(async({ctx,input})=>{
+      if (!input.userId) return
+      const [user]=await db.select().from(users).where(eq(users.clerkId,input.userId))
+      if (!user) throw new TRPCError({ code: "NOT_FOUND" });
+      const utapi=new UTApi()
+      if (!user.bannerKey) throw new TRPCError({code:"BAD_REQUEST"})
+      await utapi.deleteFiles(user.bannerKey)
+      await db.update(users).set({bannerKey:null,bannerUrl:null}).where(eq(users.clerkId,input.userId))
+    })
 });
