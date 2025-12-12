@@ -3,6 +3,11 @@ import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 // Define a route matcher to protect specific routes
 const isProtectedRoute = createRouteMatcher([
   "/studio",
+  "/user",
+  "/history",
+  "/likes",
+  "/subscription",
+  "/playlist",
   "/api/trpc/(.*)",
   "/api/uploadthing/(.*)"
    // Define the routes you want to protect

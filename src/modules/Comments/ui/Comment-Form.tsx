@@ -88,8 +88,7 @@ export default function CommentForm({
             parentId,
           })
         );
-      
-       form.reset()
+        form.reset()
         toast.custom(() => (
           <div className="text-white bg-gray-950 rounded-md w-[250px] px-4 py-4 text-sm text-center">
             <h1 className="text-left">Comment Added</h1>
@@ -99,9 +98,12 @@ export default function CommentForm({
       },
       onError: (err) => {
         if (err.data?.code === "UNAUTHORIZED") {
-          clerk.openSignIn();
+          toast.custom(() => (
+            <div className="text-white bg-gray-950 rounded-md w-[250px] px-4 py-4 text-sm text-center">
+              <h1 className="text-left">Please sign in first.</h1>
+            </div>
+          ));
         }
-        toast.error(err.message);
       },
     })
   );
@@ -109,7 +111,7 @@ export default function CommentForm({
   const handleSubmit = (
     values: z.infer<typeof CommentCreateSchemaWithoutUserId>
   ) => {
-   
+
     create.mutate({
       CommentInfo: values.commentinfo,
       videoId: videoId,
@@ -149,11 +151,10 @@ export default function CommentForm({
                     name={field.name}
                     onClick={() => setsubmitbutton(true)}
                     className="font-normal  text-[14px] aria-invalid:border-l-0 aria-invalid:border-r-0 aria-invalid:border-b aria-invalid:border-t-0  min-h-6 p-0 border-white border-b border-b-gray-400 focus:border-b-blue-500 transition ease-in-out duration-200 focus:border-1 rounded-none resize-y max-h-40 pb-4 h-auto"
-                    placeholder={`${
-                      variant === "comment"
+                    placeholder={`${variant === "comment"
                         ? "Add a comment.."
                         : "Add a reply.."
-                    }`}
+                      }`}
                   />
                 </FormControl>
                 <FormMessage />
