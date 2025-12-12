@@ -130,7 +130,7 @@ export default function CommentForm({
           <div className={`${variant === "comment" ? "h-10 w-10" : "h-8 w-8"}`}>
             <UserAvatar
               className="border-none border-0"
-              imageUrl={user?.imageUrl || "/thumb.png"}
+              imageUrl={user?.imageUrl || "/user.svg"}
             />
           </div>
           <FormField
